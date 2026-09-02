@@ -34,7 +34,9 @@ export async function GET(request: NextRequest) {
     if (!res.ok) {
       const errText = await res.text();
       console.error('Backend exchange failed:', errText);
-      return NextResponse.redirect(new URL('/login?error=ExchangeFailed', request.url));
+      // Append the actual error text to the URL for debugging
+      const encodedErr = encodeURIComponent(errText);
+      return NextResponse.redirect(new URL(`/login?error=ExchangeFailed&detail=${encodedErr}`, request.url));
     }
 
     const data = await res.json();
