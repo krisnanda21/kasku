@@ -25,6 +25,9 @@ export default function DashboardLayout({
           <Link href="/dashboard/portfolios" className={styles.navLink}>
             Portofolio
           </Link>
+          <Link href="/dashboard/reports" className={styles.navLink}>
+            Laporan
+          </Link>
         </nav>
         <nav className={styles.nav}>
           <Link 
