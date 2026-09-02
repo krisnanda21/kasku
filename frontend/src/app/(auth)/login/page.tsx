@@ -60,7 +60,7 @@ export default function LoginPage() {
           </div>
 
           <a 
-            href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/google/login`}
+            href="/api/auth/google/login"
             className={`btn btn-secondary ${styles.submitBtn}`}
             style={{ 
               display: 'flex', 

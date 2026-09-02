@@ -1,0 +1,74 @@
+11:23:29.653 Running build in Washington, D.C., USA (East) – iad1
+11:23:29.654 Build machine configuration: 2 cores, 8 GB
+11:23:29.695 Cloning github.com/krisnanda21/kasku (Branch: master, Commit: 3b42805)
+11:23:29.696 Skipping build cache, deployment was triggered without cache.
+11:23:30.069 Cloning completed: 373.000ms
+11:23:30.434 Running "vercel build"
+11:23:30.452 Vercel CLI 59.3.0
+11:23:30.981 Installing dependencies...
+11:23:35.982 npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+11:23:40.516 
+11:23:40.517 added 345 packages in 9s
+11:23:40.517 
+11:23:40.517 142 packages are looking for funding
+11:23:40.517   run `npm fund` for details
+11:23:40.519 npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+11:23:40.519 npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+11:23:40.520 npm warn allow-scripts
+11:23:40.520 npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+11:23:40.606 Running "npm run build"
+11:23:40.750 
+11:23:40.751 > frontend@0.1.0 build
+11:23:40.751 > next build
+11:23:40.751 
+11:23:41.130 ▲ Next.js 16.3.4 (Turbopack)
+11:23:41.175 ✓ Running next.config.ts took 45ms
+11:23:41.413 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+11:23:41.414 This information is used to shape Next.js' roadmap and prioritize features.
+11:23:41.414 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+11:23:41.414 https://nextjs.org/telemetry
+11:23:41.414 
+11:23:41.519 
+11:23:41.626 ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+11:23:41.627 
+11:23:41.627   To migrate automatically, run:
+11:23:41.627   npx @next/codemod@canary middleware-to-proxy .
+11:23:41.627 
+11:23:41.627   Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+11:23:41.652   Creating an optimized production build ...
+11:23:47.126 ✓ Compiled successfully in 4.6s
+11:23:47.128   Running TypeScript ...
+11:23:49.818   Finished TypeScript in 2.7s ...
+11:23:49.821   Collecting page data using 1 worker ...
+11:23:50.302   Generating static pages using 1 worker (0/10) ...
+11:23:50.432   Generating static pages using 1 worker (2/10) 
+11:23:50.494   Generating static pages using 1 worker (4/10) 
+11:23:50.509   Generating static pages using 1 worker (7/10) 
+11:23:50.534 ✓ Generating static pages using 1 worker (10/10) in 232ms
+11:23:50.540   Finalizing page optimization ...
+11:23:50.545 
+11:23:50.549 Route (app)
+11:23:50.550 ┌ ○ /
+11:23:50.550 ├ ○ /_not-found
+11:23:50.550 ├ ƒ /dashboard
+11:23:50.550 ├ ƒ /dashboard/portfolios
+11:23:50.550 ├ ƒ /dashboard/portfolios/[id]/transactions
+11:23:50.550 ├ ƒ /dashboard/portfolios/[id]/transactions/new
+11:23:50.550 ├ ○ /dashboard/portfolios/new
+11:23:50.550 ├ ƒ /dashboard/reports
+11:23:50.550 ├ ○ /login
+11:23:50.550 └ ○ /register
+11:23:50.550 
+11:23:50.550 
+11:23:50.551 ƒ Proxy (Middleware)
+11:23:50.552 
+11:23:50.552 ○  (Static)   prerendered as static content
+11:23:50.553 ƒ  (Dynamic)  server-rendered on demand
+11:23:50.553 
+11:23:51.093 Build Completed in /vercel/output [20s]
+11:23:51.114 Deploying outputs...
+11:23:52.162 Deployment completed
+11:23:52.282 Creating build cache...
+11:24:05.749 Created build cache: 13s
+11:24:05.750 Uploading build cache [101.39 MB]
+11:24:07.320 Build cache uploaded: 1.574s

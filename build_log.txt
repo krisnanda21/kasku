@@ -1,0 +1,95 @@
+2026-09-02T03:48:42.941986444Z stdout F [2026-09-02T03:48:42Z INFO ] Process terminated with exit code 11
+2026-09-02T03:48:42.933654754Z stderr F [error] BuildService - Build failed: Could not build the image.
+2026-09-02T03:48:42.204523397Z stdout F error: failed to solve: process "/bin/sh -c CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api/main.go" did not complete successfully: exit code: 1
+2026-09-02T03:48:42.204503465Z stdout F --------------------
+2026-09-02T03:48:42.204226026Z stdout F   16 |     # Final stage
+2026-09-02T03:48:42.204224719Z stdout F   15 |     
+2026-09-02T03:48:42.204223416Z stdout F   14 | >>> RUN CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api/main.go
+2026-09-02T03:48:42.2042218Z stdout F   13 |     RUN go mod download
+2026-09-02T03:48:42.204219748Z stdout F   12 |     # Download modules and build
+2026-09-02T03:48:42.204218104Z stdout F --------------------
+2026-09-02T03:48:42.204212385Z stdout F Dockerfile:14
+2026-09-02T03:48:42.203495254Z stdout F ------
+2026-09-02T03:48:42.20349416Z stdout F 1.133 stat /app/backend/cmd/api/main.go: directory not found
+2026-09-02T03:48:42.203492288Z stdout F  > [builder 6/6] RUN CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api/main.go:
+2026-09-02T03:48:42.203489993Z stdout F ------
+2026-09-02T03:48:42.203480642Z stdout F #13 ERROR: process "/bin/sh -c CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api/main.go" did not complete successfully: exit code: 1
+2026-09-02T03:48:42.057100565Z stdout F #13 1.133 stat /app/backend/cmd/api/main.go: directory not found
+2026-09-02T03:48:41.07442643Z stdout F #13 [builder 6/6] RUN CGO_ENABLED=0 GOOS=linux go build -o /app/api ./cmd/api/main.go
+2026-09-02T03:48:41.074186543Z stdout F 
+2026-09-02T03:48:40.923054271Z stdout F #12 DONE 2.9s
+2026-09-02T03:48:38.130069923Z stdout F #12 [builder 5/6] RUN go mod download
+2026-09-02T03:48:38.129476683Z stdout F 
+2026-09-02T03:48:37.977507382Z stdout F #11 DONE 0.8s
+2026-09-02T03:48:37.349197163Z stdout F #11 [builder 4/6] WORKDIR /app/backend
+2026-09-02T03:48:37.348532479Z stdout F 
+2026-09-02T03:48:37.194248096Z stdout F #10 DONE 0.6s
+2026-09-02T03:48:36.740246373Z stdout F #10 [builder 3/6] COPY . .
+2026-09-02T03:48:36.739330738Z stdout F 
+2026-09-02T03:48:36.587790401Z stdout F #9 DONE 0.5s
+2026-09-02T03:48:36.204479594Z stdout F #9 [builder 2/6] WORKDIR /app
+2026-09-02T03:48:36.204432557Z stdout F 
+2026-09-02T03:48:36.048811886Z stdout F #7 DONE 3.9s
+2026-09-02T03:48:36.048533537Z stdout F #7 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0.6s done
+2026-09-02T03:48:35.598337192Z stdout F #7 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1
+2026-09-02T03:48:35.598324808Z stdout F #7 [builder 1/6] FROM docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac
+2026-09-02T03:48:35.597572179Z stdout F 
+2026-09-02T03:48:35.452396412Z stdout F #7 DONE 3.3s
+2026-09-02T03:48:35.452364214Z stdout F #7 extracting sha256:e4488ab00a85e5a17f0636bbc60cc704c29bc934f9b48ab76cd17fc6424a2252 0.6s done
+2026-09-02T03:48:35.005403079Z stdout F #7 extracting sha256:e4488ab00a85e5a17f0636bbc60cc704c29bc934f9b48ab76cd17fc6424a2252
+2026-09-02T03:48:35.005400666Z stdout F #7 [builder 1/6] FROM docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac
+2026-09-02T03:48:35.005367693Z stdout F 
+2026-09-02T03:48:34.85536815Z stdout F #7 DONE 2.7s
+2026-09-02T03:48:34.855339129Z stdout F #7 extracting sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 1.8s done
+2026-09-02T03:48:33.155965348Z stdout F #7 extracting sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095
+2026-09-02T03:48:33.155945434Z stdout F #7 [builder 1/6] FROM docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac
+2026-09-02T03:48:33.155381806Z stdout F 
+2026-09-02T03:48:33.005939415Z stdout F #7 DONE 0.8s
+2026-09-02T03:48:33.005937898Z stdout F #7 extracting sha256:a12b2df95d81e0646230784c610be014bf67567dfdbf5b3365c9ec022b95ff28 0.0s done
+2026-09-02T03:48:33.005932088Z stdout F #7 sha256:a12b2df95d81e0646230784c610be014bf67567dfdbf5b3365c9ec022b95ff28 245.07kB / 245.07kB 0.4s done
+2026-09-02T03:48:33.005185252Z stdout F #7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 71.08MB / 71.08MB 0.7s done
+2026-09-02T03:48:32.875996966Z stdout F #7 sha256:a12b2df95d81e0646230784c610be014bf67567dfdbf5b3365c9ec022b95ff28 0B / 245.07kB 0.2s
+2026-09-02T03:48:32.875995581Z stdout F #7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 67.11MB / 71.08MB 0.6s
+2026-09-02T03:48:32.875994105Z stdout F #7 [builder 1/6] FROM docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac
+2026-09-02T03:48:32.875991282Z stdout F 
+2026-09-02T03:48:32.875989997Z stdout F #8 DONE 0.0s
+2026-09-02T03:48:32.875988971Z stdout F #8 [stage-1 2/3] WORKDIR /app
+2026-09-02T03:48:32.875986681Z stdout F 
+2026-09-02T03:48:32.875961207Z stdout F #7 ...
+2026-09-02T03:48:32.694704899Z stdout F #7 sha256:ef1dbfdbb5d59bdeac07b1398a9f0808b453513bf6a76eb3ffd509a284483095 0B / 71.08MB 0.3s
+2026-09-02T03:48:32.694703799Z stdout F #7 sha256:e4488ab00a85e5a17f0636bbc60cc704c29bc934f9b48ab76cd17fc6424a2252 127B / 127B 0.3s done
+2026-09-02T03:48:32.694702541Z stdout F #7 sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 32B / 32B 0.3s done
+2026-09-02T03:48:32.694701081Z stdout F #7 resolve docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac 0.0s done
+2026-09-02T03:48:32.69469965Z stdout F #7 [builder 1/6] FROM docker.io/library/golang:alpine@sha256:26402d86be3d72e6a9410afa0108f03529f51f0c1b5eb7f503d0bc44cc7857ac
+2026-09-02T03:48:32.694696409Z stdout F 
+2026-09-02T03:48:32.694672905Z stdout F #6 DONE 0.5s
+2026-09-02T03:48:32.693619318Z stdout F #6 extracting sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0.1s done
+2026-09-02T03:48:32.693242987Z stdout F #6 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 3.85MB / 3.85MB 0.4s done
+2026-09-02T03:48:32.376691344Z stdout F #6 sha256:55afa1ecc21d2bb5e5045f32dafee56272ffd89860bac26f6c32123439af26a4 0B / 3.85MB 0.2s
+2026-09-02T03:48:32.376689076Z stdout F #6 resolve docker.io/library/alpine:latest@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b done
+2026-09-02T03:48:32.376686581Z stdout F #6 [stage-1 1/3] FROM docker.io/library/alpine:latest@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+2026-09-02T03:48:32.376684002Z stdout F 
+2026-09-02T03:48:32.376683461Z stdout F #5 DONE 0.1s
+2026-09-02T03:48:32.376682431Z stdout F #5 transferring context: 40.38kB done
+2026-09-02T03:48:32.37667985Z stdout F #5 [internal] load build context
+2026-09-02T03:48:32.376267808Z stdout F 
+2026-09-02T03:48:32.376267221Z stdout F #4 DONE 0.0s
+2026-09-02T03:48:32.376266562Z stdout F #4 transferring context: 2B done
+2026-09-02T03:48:32.376265158Z stdout F #4 [internal] load .dockerignore
+2026-09-02T03:48:32.376251852Z stdout F 
+2026-09-02T03:48:32.171888202Z stdout F #3 DONE 1.4s
+2026-09-02T03:48:31.947725623Z stdout F #3 [internal] load metadata for docker.io/library/alpine:latest
+2026-09-02T03:48:31.947724338Z stdout F 
+2026-09-02T03:48:31.947710431Z stdout F #2 DONE 1.2s
+2026-09-02T03:48:30.892252673Z stdout F #2 [internal] load metadata for docker.io/library/golang:alpine
+2026-09-02T03:48:30.892251662Z stdout F 
+2026-09-02T03:48:30.892250369Z stdout F #1 DONE 0.0s
+2026-09-02T03:48:30.891750558Z stdout F #1 transferring dockerfile: 550B done
+2026-09-02T03:48:30.722586558Z stdout F #1 [internal] load build definition from Dockerfile
+2026-09-02T03:48:30.667343376Z stderr F  * branch            b5dcc5d67db5b830efc7a71c9c32a8ae20f0a039 -> FETCH_HEAD
+2026-09-02T03:48:30.667331696Z stderr F From https://github.com/krisnanda21/kasku
+2026-09-02T03:48:30.421638169Z stderr F POST git-upload-pack (185 bytes)
+2026-09-02T03:48:30.138746888Z stdout F Initialized empty Git repository in /root/workspace/.git/
+2026-09-02T03:48:29.673403938Z stdout F [2026-09-02T03:48:29Z INFO ] Starting container entrypoint...
+2026-09-02T03:48:29.67325736Z stdout F [2026-09-02T03:48:29Z INFO ] Successfully fetched environment variables
+2026-09-02T03:48:29.673236342Z stdout F [2026-09-02T03:48:29Z INFO ] Securely fetching environment variables

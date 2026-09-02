@@ -2,10 +2,7 @@ package auth
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -18,57 +15,43 @@ import (
 	"golang.org/x/oauth2/google"
 )
 
-var googleOauthConfig *oauth2.Config
+type GoogleExchangeInput struct {
+	Code        string `json:"code" binding:"required"`
+	RedirectURI string `json:"redirect_uri" binding:"required"`
+}
 
-func initOauthConfig() {
-	redirectURL := os.Getenv("GOOGLE_REDIRECT_URL")
-	if redirectURL == "" {
-		// Default to local for development if not set in Northflank yet
-		redirectURL = "http://localhost:8080/api/v1/auth/google/callback"
+func GoogleExchange(c *gin.Context) {
+	var input GoogleExchangeInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
 	}
 
-	googleOauthConfig = &oauth2.Config{
-		RedirectURL:  redirectURL,
+	// Initialize oauth config with the dynamic redirect_uri
+	oauthConfig := &oauth2.Config{
+		RedirectURL:  input.RedirectURI,
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
-}
 
-// generateStateOauthCookie generates a random state and sets it as a cookie
-func generateStateOauthCookie(c *gin.Context) string {
-	b := make([]byte, 16)
-	rand.Read(b)
-	state := base64.URLEncoding.EncodeToString(b)
-	c.SetCookie("oauthstate", state, 3600, "/", "", false, true)
-	return state
-}
-
-func GoogleLogin(c *gin.Context) {
-	if googleOauthConfig == nil {
-		initOauthConfig()
-	}
-	
-	oauthState := generateStateOauthCookie(c)
-	u := googleOauthConfig.AuthCodeURL(oauthState)
-	c.Redirect(http.StatusTemporaryRedirect, u)
-}
-
-func GoogleCallback(c *gin.Context) {
-	if googleOauthConfig == nil {
-		initOauthConfig()
-	}
-
-	oauthState, _ := c.Cookie("oauthstate")
-	if c.Query("state") != oauthState {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid oauth google state"})
+	// Use code to get token and get user info from Google.
+	tokenResponse, err := oauthConfig.Exchange(context.Background(), input.Code)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to exchange code: " + err.Error()})
 		return
 	}
 
-	data, err := getUserDataFromGoogle(c.Query("code"))
+	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + tokenResponse.AccessToken)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user data from google: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed getting user info: " + err.Error()})
+		return
+	}
+	defer response.Body.Close()
+	data, err := io.ReadAll(response.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response: " + err.Error()})
 		return
 	}
 
@@ -128,30 +111,6 @@ func GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	frontendURL := os.Getenv("FRONTEND_URL")
-	if frontendURL == "" {
-		frontendURL = "http://localhost:3000"
-	}
-
-	// Redirect back to frontend with the token
-	redirectUrl := fmt.Sprintf("%s/api/auth/callback?token=%s", frontendURL, token)
-	c.Redirect(http.StatusTemporaryRedirect, redirectUrl)
-}
-
-func getUserDataFromGoogle(code string) ([]byte, error) {
-	// Use code to get token and get user info from Google.
-	token, err := googleOauthConfig.Exchange(context.Background(), code)
-	if err != nil {
-		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
-	}
-	response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
-	if err != nil {
-		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
-	}
-	defer response.Body.Close()
-	contents, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed read response: %s", err.Error())
-	}
-	return contents, nil
+	// Return the token as JSON
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
