@@ -56,6 +56,8 @@ type Transaction struct {
 	PortfolioID string         `gorm:"type:uuid;not null;index" json:"portfolio_id"`
 	CategoryID  string         `gorm:"type:uuid;not null;index" json:"category_id"`
 	Category    Category       `gorm:"foreignKey:CategoryID" json:"category"`
+	CreatedBy   string         `gorm:"type:uuid;not null" json:"created_by"`
+	Creator     User           `gorm:"foreignKey:CreatedBy" json:"creator"`
 	Amount      float64        `gorm:"not null" json:"amount"`
 	Type        string         `gorm:"not null" json:"type"` // 'income', 'expense'
 	Date        time.Time      `gorm:"type:date;not null" json:"date"`
@@ -66,6 +68,17 @@ type Transaction struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
+type TransactionLog struct {
+	ID            string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	TransactionID string         `gorm:"type:uuid;not null;index" json:"transaction_id"`
+	ChangedBy     string         `gorm:"type:uuid;not null" json:"changed_by"`
+	User          User           `gorm:"foreignKey:ChangedBy" json:"user"`
+	Action        string         `gorm:"not null" json:"action"` // 'create', 'update', 'delete'
+	OldValues     string         `gorm:"type:jsonb" json:"old_values"` // store as jsonb
+	NewValues     string         `gorm:"type:jsonb" json:"new_values"` // store as jsonb
+	CreatedAt     time.Time      `json:"created_at"`
+}
+
 func Migrate() {
 	DB.AutoMigrate(
 		&User{},
@@ -73,5 +86,6 @@ func Migrate() {
 		&PortfolioMember{},
 		&Category{},
 		&Transaction{},
+		&TransactionLog{},
 	)
 }

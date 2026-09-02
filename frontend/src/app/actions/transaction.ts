@@ -10,9 +10,17 @@ export async function createTransactionAction(prevState: any, formData: FormData
   const type = formData.get('type');
   const amount = Number(formData.get('amount'));
   const description = formData.get('description');
+  const category_id = formData.get('category_id');
+  const date = formData.get('date');
 
   if (!amount || amount <= 0) {
     return { error: 'Jumlah transaksi tidak valid' };
+  }
+  if (!category_id) {
+    return { error: 'Kategori wajib dipilih' };
+  }
+  if (!date) {
+    return { error: 'Tanggal transaksi wajib diisi' };
   }
 
   const cookieStore = await cookies();
@@ -29,7 +37,8 @@ export async function createTransactionAction(prevState: any, formData: FormData
         type,
         amount,
         description,
-        category_id: null // Untuk versi MVP sederhana, kategori tidak wajib
+        category_id,
+        date: new Date(date as string).toISOString()
       }),
     });
 
