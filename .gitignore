@@ -1,0 +1,23 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Go
+bin/
+obj/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Node (in case root is used for frontend)
+node_modules/
+dist/
+.next/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
