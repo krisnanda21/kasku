@@ -85,7 +85,7 @@ func GoogleExchange(c *gin.Context) {
 		}
 		
 		if err := database.DB.Create(&user).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user: " + err.Error()})
 			return
 		}
 
@@ -95,13 +95,19 @@ func GoogleExchange(c *gin.Context) {
 			OwnerID: user.ID,
 			Color:   "#4F46E5",
 		}
-		database.DB.Create(&defaultPortfolio)
+		if err := database.DB.Create(&defaultPortfolio).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create portfolio: " + err.Error()})
+			return
+		}
 		
-		database.DB.Create(&database.PortfolioMember{
+		if err := database.DB.Create(&database.PortfolioMember{
 			PortfolioID: defaultPortfolio.ID,
 			UserID:      user.ID,
 			Role:        "owner",
-		})
+		}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create member: " + err.Error()})
+			return
+		}
 	}
 
 	// Generate JWT Token
