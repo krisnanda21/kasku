@@ -81,7 +81,7 @@ func GoogleExchange(c *gin.Context) {
 		user = database.User{
 			Name:     googleUser.Name,
 			Email:    googleUser.Email,
-			Password: "", // No password for OAuth users
+			Password: "OAUTH_USER_NO_PASSWORD", // Non-empty so GORM doesn't omit it, preventing NOT NULL error
 		}
 		
 		if err := database.DB.Create(&user).Error; err != nil {
