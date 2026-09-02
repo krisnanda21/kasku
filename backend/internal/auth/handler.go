@@ -16,7 +16,10 @@ func RegisterRoutes(router *gin.RouterGroup) {
 	{
 		authGroup.POST("/register", register)
 		authGroup.POST("/login", login)
-		// /auth/google, /auth/logout, dsb.
+		
+		// Google OAuth Routes
+		authGroup.GET("/google/login", GoogleLogin)
+		authGroup.GET("/google/callback", GoogleCallback)
 	}
 }
 

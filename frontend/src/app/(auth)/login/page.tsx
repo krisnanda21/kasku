@@ -52,6 +52,27 @@ export default function LoginPage() {
           >
             {isPending ? 'Memproses...' : 'Masuk'}
           </button>
+
+          <div style={{ margin: '1.5rem 0', display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+            <hr style={{ flex: 1, borderColor: 'var(--border-color)', opacity: 0.5 }} />
+            <span style={{ padding: '0 1rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>atau</span>
+            <hr style={{ flex: 1, borderColor: 'var(--border-color)', opacity: 0.5 }} />
+          </div>
+
+          <a 
+            href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/auth/google/login`}
+            className={`btn btn-secondary ${styles.submitBtn}`}
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '0.5rem',
+              textDecoration: 'none'
+            }}
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" style={{ width: '1.25rem', height: '1.25rem' }} />
+            Lanjutkan dengan Google
+          </a>
         </form>
         
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
