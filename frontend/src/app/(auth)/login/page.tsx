@@ -17,36 +17,36 @@ export default function LoginPage() {
       <div className={styles.authCard}>
         <h1 className={styles.title}>Masuk ke KasKu</h1>
         <p className={styles.subtitle}>Kelola keuanganmu dengan lebih pintar</p>
-        
+
         <form action={formAction}>
           {state?.error && <div className={styles.errorMsg}>{state.error}</div>}
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="email" className={styles.label}>Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              className={styles.input} 
-              placeholder="nama@email.com" 
-              required 
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className={styles.input}
+              placeholder="nama@email.com"
+              required
             />
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="password" className={styles.label}>Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              name="password" 
-              className={styles.input} 
-              placeholder="••••••••" 
-              required 
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className={styles.input}
+              placeholder="••••••••"
+              required
             />
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             className={`btn btn-primary ${styles.submitBtn}`}
             disabled={isPending}
           >
@@ -59,13 +59,13 @@ export default function LoginPage() {
             <hr style={{ flex: 1, borderColor: 'var(--border-color)', opacity: 0.5 }} />
           </div>
 
-          <a 
+          <a
             href="/api/auth/google/login"
-            className={`btn btn-secondary ${styles.submitBtn}`}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
+            className={`btn btn-outline ${styles.submitBtn}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               gap: '0.5rem',
               textDecoration: 'none'
             }}
@@ -74,7 +74,7 @@ export default function LoginPage() {
             Lanjutkan dengan Google
           </a>
         </form>
-        
+
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
           Belum punya akun? <Link href="/register" className={styles.link}>Daftar sekarang</Link>
         </p>

@@ -107,12 +107,17 @@ func createTransaction(c *gin.Context) {
 
 	// Audit Log
 	newValuesJSON, _ := json.Marshal(transaction)
-	tx.Create(&database.TransactionLog{
+	if err := tx.Create(&database.TransactionLog{
 		TransactionID: transaction.ID,
 		ChangedBy:     userID,
 		Action:        "create",
+		OldValues:     "{}",
 		NewValues:     string(newValuesJSON),
-	})
+	}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan log transaksi"})
+		return
+	}
 
 	tx.Commit()
 	c.JSON(http.StatusCreated, gin.H{"data": transaction})
@@ -202,13 +207,17 @@ func updateTransaction(c *gin.Context) {
 
 	// Audit Log
 	newValuesJSON, _ := json.Marshal(transaction)
-	tx.Create(&database.TransactionLog{
+	if err := tx.Create(&database.TransactionLog{
 		TransactionID: transaction.ID,
 		ChangedBy:     userID,
 		Action:        "update",
 		OldValues:     string(oldValuesJSON),
 		NewValues:     string(newValuesJSON),
-	})
+	}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan log transaksi"})
+		return
+	}
 
 	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"data": transaction})
@@ -256,12 +265,17 @@ func deleteTransaction(c *gin.Context) {
 	}
 
 	// Audit Log
-	tx.Create(&database.TransactionLog{
+	if err := tx.Create(&database.TransactionLog{
 		TransactionID: transaction.ID,
 		ChangedBy:     userID,
 		Action:        "delete",
 		OldValues:     string(oldValuesJSON),
-	})
+		NewValues:     "{}",
+	}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan log transaksi"})
+		return
+	}
 
 	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"message": "Transaksi dihapus"})

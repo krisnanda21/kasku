@@ -1,17 +1,48 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { createTransactionAction } from '@/app/actions/transaction';
+import { useActionState, useState, useEffect, startTransition } from 'react';
+import { createTransactionAction, updateTransactionAction } from '@/app/actions/transaction';
 import Link from 'next/link';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
+import CustomSelect from '@/components/ui/CustomSelect';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
-export default function TransactionForm({ portfolioId, categories }: { portfolioId: string, categories: any[] }) {
-  const [state, formAction, isPending] = useActionState(createTransactionAction, { error: '' });
-  const [type, setType] = useState('expense');
+export default function TransactionForm({ 
+  portfolioId, 
+  categories, 
+  isModal = false, 
+  onSuccess,
+  initialData
+}: { 
+  portfolioId: string, 
+  categories: any[], 
+  isModal?: boolean, 
+  onSuccess?: () => void,
+  initialData?: any
+}) {
+  const isEdit = !!initialData;
+  const actionToUse = isEdit ? updateTransactionAction.bind(null, initialData.id, portfolioId) : createTransactionAction;
+  
+  const [state, formAction, isPending] = useActionState(actionToUse as any, { error: '' } as any);
+  
+  const [type, setType] = useState(initialData?.type || 'expense');
   const [isCustomCategory, setIsCustomCategory] = useState(false);
-  const [displayAmount, setDisplayAmount] = useState('');
+  
+  const initialDisplayAmount = initialData ? new Intl.NumberFormat('id-ID').format(initialData.amount) : '';
+  const [displayAmount, setDisplayAmount] = useState(initialDisplayAmount);
 
-  // Set default date to today in YYYY-MM-DD format for input[type="date"]
-  const today = new Date().toISOString().split('T')[0];
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<FormData | null>(null);
+
+  useEffect(() => {
+    if (state?.success && onSuccess) {
+      onSuccess();
+    }
+  }, [state, onSuccess]);
+
+  const initialDate = initialData ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+  const [date, setDate] = useState(initialDate);
+  const [categoryId, setCategoryId] = useState(initialData?.category_id || '');
 
   const filteredCategories = categories.filter(c => c.type === type);
 
@@ -25,22 +56,46 @@ export default function TransactionForm({ portfolioId, categories }: { portfolio
     setDisplayAmount(formatted);
   };
 
-  return (
-    <div style={{ maxWidth: '600px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <Link href={`/dashboard/portfolios/${portfolioId}/transactions`} style={{ fontSize: '1.5rem', textDecoration: 'none', color: 'var(--text-muted)' }}>
-          ←
-        </Link>
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>Catat Transaksi Baru</h1>
-      </div>
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (isEdit) {
+      e.preventDefault();
+      setPendingFormData(new FormData(e.currentTarget));
+      setShowConfirm(true);
+    }
+  };
 
-      <div style={{
+  const confirmSave = () => {
+    if (pendingFormData) {
+      startTransition(() => {
+        (formAction as any)(pendingFormData);
+      });
+    }
+    setShowConfirm(false);
+  };
+
+  return (
+    <div style={isModal ? {} : { maxWidth: '600px' }}>
+      {!isModal && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+          <Link href={`/dashboard/portfolios/${portfolioId}/transactions`} style={{ fontSize: '1.5rem', textDecoration: 'none', color: 'var(--text-muted)' }}>
+            ←
+          </Link>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>{isEdit ? 'Edit Transaksi' : 'Catat Transaksi Baru'}</h1>
+        </div>
+      )}
+      {isModal && (
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1.5rem', marginTop: '-0.5rem' }}>
+          {isEdit ? 'Edit Transaksi' : 'Catat Transaksi Baru'}
+        </h2>
+      )}
+
+      <div style={isModal ? {} : {
         backgroundColor: 'var(--card-bg)',
         padding: '2rem',
         borderRadius: '1rem',
         border: '1px solid var(--border-color)'
       }}>
-        <form action={formAction}>
+        <form action={formAction} onSubmit={handleSubmit}>
           {/* Hidden input to pass portfolio ID */}
           <input type="hidden" name="portfolio_id" value={portfolioId} />
 
@@ -48,60 +103,63 @@ export default function TransactionForm({ portfolioId, categories }: { portfolio
           
           <div style={{ marginBottom: '1.5rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Jenis Transaksi</label>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="radio" name="type" value="income" checked={type === 'income'} onChange={() => { setType('income'); setIsCustomCategory(false); }} />
+            <input type="hidden" name="type" value={type} />
+            <div style={{ display: 'flex', backgroundColor: 'var(--bg-color)', borderRadius: '0.5rem', padding: '0.375rem', border: '1px solid var(--border-color)' }}>
+              <div 
+                onClick={() => { setType('income'); setIsCustomCategory(false); setCategoryId(''); }}
+                style={{ 
+                  flex: 1, textAlign: 'center', padding: '0.625rem 1rem', cursor: 'pointer', borderRadius: '0.375rem',
+                  backgroundColor: type === 'income' ? 'var(--card-bg)' : 'transparent',
+                  color: type === 'income' ? 'var(--success)' : 'var(--text-muted)',
+                  fontWeight: type === 'income' ? 600 : 400,
+                  boxShadow: type === 'income' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.2s ease-in-out',
+                  userSelect: 'none'
+                }}
+              >
                 Pemasukan (+)
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                <input type="radio" name="type" value="expense" checked={type === 'expense'} onChange={() => { setType('expense'); setIsCustomCategory(false); }} />
+              </div>
+              <div 
+                onClick={() => { setType('expense'); setIsCustomCategory(false); setCategoryId(''); }}
+                style={{ 
+                  flex: 1, textAlign: 'center', padding: '0.625rem 1rem', cursor: 'pointer', borderRadius: '0.375rem',
+                  backgroundColor: type === 'expense' ? 'var(--card-bg)' : 'transparent',
+                  color: type === 'expense' ? 'var(--danger)' : 'var(--text-muted)',
+                  fontWeight: type === 'expense' ? 600 : 400,
+                  boxShadow: type === 'expense' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  transition: 'all 0.2s ease-in-out',
+                  userSelect: 'none'
+                }}
+              >
                 Pengeluaran (-)
-              </label>
+              </div>
             </div>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label htmlFor="date" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Tanggal Transaksi</label>
-            <input 
-              type="date" 
-              id="date" 
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Tanggal Transaksi</label>
+            <CustomDatePicker 
               name="date" 
-              defaultValue={today}
-              onClick={(e) => (e.target as HTMLInputElement).showPicker()}
-              required 
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-color)',
-                color: 'var(--text-main)',
-              }}
+              value={date} 
+              onChange={setDate} 
             />
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label htmlFor="category_id" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Kategori</label>
-            <select 
-              id="category_id" 
-              name="category_id" 
-              required 
-              onChange={(e) => setIsCustomCategory(e.target.value === 'custom')}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.5rem',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-color)',
-                color: 'var(--text-main)',
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Kategori</label>
+            <CustomSelect 
+              name="category_id"
+              placeholder="-- Pilih Kategori --"
+              value={categoryId}
+              onChange={(val: string) => {
+                setCategoryId(val);
+                setIsCustomCategory(val === 'custom');
               }}
-            >
-              <option value="">-- Pilih Kategori --</option>
-              {filteredCategories.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-              <option value="custom">+ Tambah Kategori Baru</option>
-            </select>
+              options={[
+                ...filteredCategories.map((c: any) => ({ value: c.id, label: c.name })),
+                { value: 'custom', label: '+ Tambah Kategori Baru' }
+              ]}
+            />
           </div>
 
           {isCustomCategory && (
@@ -150,6 +208,7 @@ export default function TransactionForm({ portfolioId, categories }: { portfolio
               id="description" 
               name="description" 
               rows={3}
+              defaultValue={initialData?.description || ''}
               placeholder="Contoh: Beli makan siang, Gaji bulanan..." 
               style={{
                 width: '100%',
@@ -169,10 +228,19 @@ export default function TransactionForm({ portfolioId, categories }: { portfolio
             disabled={isPending}
             style={{ width: '100%' }}
           >
-            {isPending ? 'Menyimpan...' : 'Simpan Transaksi'}
+            {isPending ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Simpan Transaksi')}
           </button>
         </form>
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Simpan Perubahan?"
+        message="Apakah Anda yakin ingin menyimpan perubahan pada transaksi ini?"
+        confirmText="Simpan"
+        onConfirm={confirmSave}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
+import PortfolioHeader from './PortfolioHeader';
 
 async function getPortfolios() {
   const cookieStore = await cookies();
@@ -22,15 +23,7 @@ export default async function PortfoliosPage() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>Manajemen Portofolio</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Kelola kas, tabungan, dan dompet Anda</p>
-        </div>
-        <Link href="/dashboard/portfolios/new" className="btn btn-primary">
-          + Portofolio Baru
-        </Link>
-      </div>
+      <PortfolioHeader />
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
         {portfolios.map((p: any) => (

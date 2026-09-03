@@ -1,6 +1,9 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import TransactionFilters from './TransactionFilters';
+import TransactionHeader from './TransactionHeader';
+import TransactionActions from './TransactionActions';
+import PortfolioActions from '../../PortfolioActions';
 
 async function getPortfolioDetails(id: string) {
   const cookieStore = await cookies();
@@ -65,22 +68,22 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <Link href="/dashboard/portfolios" style={{ fontSize: '1.5rem', textDecoration: 'none', color: 'var(--text-muted)' }}>
-          ←
-        </Link>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>{portfolio.name}</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Saldo: <strong style={{ color: 'var(--primary)' }}>Rp {portfolio.balance.toLocaleString('id-ID')}</strong></p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Link href="/dashboard/portfolios" style={{ fontSize: '1.5rem', textDecoration: 'none', color: 'var(--text-muted)' }}>
+            ←
+          </Link>
+          <div>
+            <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>{portfolio.name}</h1>
+            <p style={{ color: 'var(--text-muted)' }}>Saldo: <strong style={{ color: 'var(--primary)' }}>Rp {portfolio.balance.toLocaleString('id-ID')}</strong></p>
+          </div>
+        </div>
+        <div style={{ width: '200px' }}>
+          <PortfolioActions portfolio={portfolio} />
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Riwayat Transaksi</h2>
-        <Link href={`/dashboard/portfolios/${portfolio.id}/transactions/new`} className="btn btn-primary">
-          + Catat Transaksi
-        </Link>
-      </div>
+      <TransactionHeader portfolioId={portfolio.id} categories={categories} />
 
       <TransactionFilters categories={categories} />
 
@@ -117,9 +120,7 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
                     {t.type === 'income' ? '+' : '-'} Rp {t.amount.toLocaleString('id-ID')}
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center' }}>
-                    <Link href={`/dashboard/portfolios/${portfolio.id}/transactions/${t.id}`} style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-                      Detail
-                    </Link>
+                    <TransactionActions transaction={t} portfolioId={portfolio.id} categories={categories} />
                   </td>
                 </tr>
               ))}
