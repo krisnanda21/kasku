@@ -3,6 +3,7 @@ package transactions
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"kasku-backend/pkg/database"
@@ -46,13 +47,40 @@ func getTransactions(c *gin.Context) {
 		query = query.Where("category_id = ?", categoryID)
 	}
 
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 { page = 1 }
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 { limit = 10 }
+	offset := (page - 1) * limit
+
+	var total int64
+	if err := query.Model(&database.Transaction{}).Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung transaksi"})
+		return
+	}
+
 	var transactions []database.Transaction
-	if err := query.Preload("Category").Order("date desc, created_at desc").Find(&transactions).Error; err != nil {
+	if err := query.Preload("Category").Order("date desc, created_at desc").Limit(limit).Offset(offset).Find(&transactions).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil transaksi"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": transactions})
+	totalPages := 0
+	if limit > 0 {
+		totalPages = int((total + int64(limit) - 1) / int64(limit))
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": transactions,
+		"meta": gin.H{
+			"total": total,
+			"page": page,
+			"limit": limit,
+			"total_pages": totalPages,
+		},
+	})
 }
 
 type CreateTransactionInput struct {

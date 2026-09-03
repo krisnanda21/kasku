@@ -33,6 +33,20 @@ export default function TransactionFilters({ categories }: { categories: any[] }
     router.push(`?`);
   };
 
+  const handleTypeChange = (newType: string) => {
+    setType(newType);
+    if (newType) {
+      const selectedCategory = categories.find(c => c.id === categoryId);
+      if (selectedCategory && selectedCategory.type !== newType) {
+        setCategoryId('');
+      }
+    }
+  };
+
+  const filteredCategories = type 
+    ? categories.filter(c => c.type === type)
+    : categories;
+
   return (
     <form onSubmit={applyFilter} style={{
       display: 'flex', 
@@ -57,7 +71,7 @@ export default function TransactionFilters({ categories }: { categories: any[] }
         <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.25rem', color: 'var(--text-muted)' }}>Tipe</label>
         <CustomSelect 
           value={type} 
-          onChange={setType} 
+          onChange={handleTypeChange} 
           placeholder="Semua Tipe"
           options={[
             { value: '', label: 'Semua Tipe' },
@@ -74,7 +88,7 @@ export default function TransactionFilters({ categories }: { categories: any[] }
           placeholder="Semua Kategori"
           options={[
             { value: '', label: 'Semua Kategori' },
-            ...categories.map(c => ({ value: c.id, label: c.name }))
+            ...filteredCategories.map(c => ({ value: c.id, label: c.name }))
           ]}
         />
       </div>

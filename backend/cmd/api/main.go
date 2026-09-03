@@ -4,12 +4,14 @@ import (
 	"log"
 	"os"
 
+	"kasku-backend/internal/analytics"
 	"kasku-backend/internal/auth"
 	"kasku-backend/internal/categories"
 	"kasku-backend/internal/portfolios"
 	"kasku-backend/internal/transactions"
 	"kasku-backend/pkg/database"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -27,7 +29,13 @@ func main() {
 	// Setup Gin router
 	r := gin.Default()
 
-	// CORS middleware could be added here
+	// CORS middleware
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	config.AllowCredentials = true
+	r.Use(cors.New(config))
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -49,6 +57,7 @@ func main() {
 			portfolios.RegisterExportRoutes(protected)
 			categories.RegisterRoutes(protected)
 			transactions.RegisterRoutes(protected)
+			analytics.RegisterRoutes(protected)
 		}
 	}
 

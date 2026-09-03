@@ -3,6 +3,7 @@ import Link from 'next/link';
 import TransactionFilters from './TransactionFilters';
 import TransactionHeader from './TransactionHeader';
 import TransactionActions from './TransactionActions';
+import TransactionPagination from './TransactionPagination';
 import PortfolioActions from '../../PortfolioActions';
 
 async function getPortfolioDetails(id: string) {
@@ -39,7 +40,7 @@ async function getCategories(portfolioId: string) {
 async function getTransactions(portfolioId: string, searchParams: any) {
   const cookieStore = await cookies();
   const token = cookieStore.get('jwt')?.value;
-  if (!token) return [];
+  if (!token) return { data: [], meta: null };
 
   const params = new URLSearchParams(searchParams);
   
@@ -47,9 +48,9 @@ async function getTransactions(portfolioId: string, searchParams: any) {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store'
   });
-  if (!res.ok) return [];
+  if (!res.ok) return { data: [], meta: null };
   const data = await res.json();
-  return data.data || [];
+  return { data: data.data || [], meta: data.meta || null };
 }
 
 export default async function TransactionsPage(props: { params: Promise<{ id: string }>, searchParams: Promise<any> }) {
@@ -66,7 +67,7 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
 
   const categories = await getCategories(params.id);
   
-  const transactions = await getTransactions(params.id, searchParams);
+  const { data: transactions, meta } = await getTransactions(params.id, searchParams);
 
   return (
     <div>
@@ -128,6 +129,10 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
               ))}
             </tbody>
           </table>
+        )}
+        
+        {transactions.length > 0 && meta && (
+          <TransactionPagination meta={meta} />
         )}
       </div>
     </div>
