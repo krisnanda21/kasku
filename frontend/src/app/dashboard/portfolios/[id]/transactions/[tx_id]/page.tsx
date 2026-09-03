@@ -29,7 +29,8 @@ async function getTransactionLogs(portfolioId: string, txId: string) {
   return data.data || [];
 }
 
-export default async function TransactionDetailPage({ params }: { params: { id: string, tx_id: string } }) {
+export default async function TransactionDetailPage(props: { params: Promise<{ id: string, tx_id: string }> }) {
+  const params = await props.params;
   const transaction = await getTransactionDetail(params.id, params.tx_id);
   const logs = await getTransactionLogs(params.id, params.tx_id);
 

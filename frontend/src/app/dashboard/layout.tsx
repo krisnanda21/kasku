@@ -18,17 +18,7 @@ export default function DashboardLayout({
         <div className={styles.sidebarHeader}>
           <Link href="/" className={styles.logo}>KasKu.</Link>
         </div>
-        <nav className={styles.nav}>
-          <Link href="/dashboard" className={styles.navLink}>
-            Dashboard
-          </Link>
-          <Link href="/dashboard/portfolios" className={styles.navLink}>
-            Portofolio
-          </Link>
-          <Link href="/dashboard/reports" className={styles.navLink}>
-            Laporan
-          </Link>
-        </nav>
+
         <nav className={styles.nav}>
           <Link 
             href="/dashboard" 

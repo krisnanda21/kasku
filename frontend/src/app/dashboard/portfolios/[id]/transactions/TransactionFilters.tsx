@@ -49,6 +49,7 @@ export default function TransactionFilters({ categories }: { categories: any[] }
           type="date" 
           value={startDate} 
           onChange={e => setStartDate(e.target.value)}
+          onClick={(e) => (e.target as HTMLInputElement).showPicker()}
           style={{ width: '100%', padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-color)', color: 'var(--text-main)' }}
         />
       </div>
@@ -58,6 +59,7 @@ export default function TransactionFilters({ categories }: { categories: any[] }
           type="date" 
           value={endDate} 
           onChange={e => setEndDate(e.target.value)}
+          onClick={(e) => (e.target as HTMLInputElement).showPicker()}
           style={{ width: '100%', padding: '0.5rem', borderRadius: '0.5rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-color)', color: 'var(--text-main)' }}
         />
       </div>

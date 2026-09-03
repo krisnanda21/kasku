@@ -43,7 +43,8 @@ type PortfolioMember struct {
 
 type Category struct {
 	ID          string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
-	PortfolioID string         `gorm:"type:uuid;not null;index" json:"portfolio_id"`
+	UserID      string         `gorm:"type:uuid;not null;index" json:"user_id"`
+	User        User           `gorm:"foreignKey:UserID" json:"user"`
 	Name        string         `gorm:"not null" json:"name"`
 	Type        string         `gorm:"not null" json:"type"` // 'income', 'expense'
 	CreatedAt   time.Time      `json:"created_at"`

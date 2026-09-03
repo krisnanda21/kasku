@@ -19,44 +19,50 @@ func RegisterRoutes(router *gin.RouterGroup) {
 }
 
 func getCategories(c *gin.Context) {
-	// For simplicity, we can fetch all categories linked to portfolios the user has access to,
-	// or standard categories. Usually apps have default categories and custom ones per portfolio.
-	// We'll fetch custom categories based on portfolio_id.
-	portfolioID := c.Query("portfolio_id")
-	if portfolioID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "portfolio_id wajib diisi"})
+	userID := c.GetString("user_id")
+
+	var categories []database.Category
+	if err := database.DB.Where("user_id = ?", userID).Find(&categories).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil kategori"})
 		return
 	}
 
-	var categories []database.Category
-	if err := database.DB.Where("portfolio_id = ?", portfolioID).Find(&categories).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil kategori"})
-		return
+	if len(categories) == 0 {
+		defaultCategories := []database.Category{
+			{UserID: userID, Name: "Makanan", Type: "expense"},
+			{UserID: userID, Name: "Transportasi", Type: "expense"},
+			{UserID: userID, Name: "Hiburan", Type: "expense"},
+			{UserID: userID, Name: "Tagihan", Type: "expense"},
+			{UserID: userID, Name: "Gaji", Type: "income"},
+			{UserID: userID, Name: "Bonus", Type: "income"},
+			{UserID: userID, Name: "Investasi", Type: "income"},
+		}
+		if err := database.DB.Create(&defaultCategories).Error; err == nil {
+			categories = defaultCategories
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": categories})
 }
 
 type CreateCategoryInput struct {
-	PortfolioID string `json:"portfolio_id" binding:"required"`
-	Name        string `json:"name" binding:"required"`
-	Type        string `json:"type" binding:"required,oneof=income expense"`
+	Name string `json:"name" binding:"required"`
+	Type string `json:"type" binding:"required,oneof=income expense"`
 }
 
 func createCategory(c *gin.Context) {
+	userID := c.GetString("user_id")
+
 	var input CreateCategoryInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Ideally check if user has edit access to portfolio...
-	// We omit for brevity, assuming middleware or further check.
-
 	category := database.Category{
-		PortfolioID: input.PortfolioID,
-		Name:        input.Name,
-		Type:        input.Type,
+		UserID: userID,
+		Name:   input.Name,
+		Type:   input.Type,
 	}
 
 	if err := database.DB.Create(&category).Error; err != nil {

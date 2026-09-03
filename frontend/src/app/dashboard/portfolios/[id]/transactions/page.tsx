@@ -11,8 +11,12 @@ async function getPortfolioDetails(id: string) {
     headers: { Authorization: `Bearer ${token}` },
     cache: 'no-store'
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    console.log('getPortfolioDetails: res.ok is false, status:', res.status);
+    return null;
+  }
   const data = await res.json();
+  console.log('getPortfolioDetails data:', data);
   return data.data;
 }
 
@@ -46,13 +50,14 @@ async function getTransactions(portfolioId: string, searchParams: any) {
   return data.data || [];
 }
 
-export default async function TransactionsPage({ params, searchParams }: { params: { id: string }, searchParams: any }) {
+export default async function TransactionsPage(props: { params: Promise<{ id: string }>, searchParams: Promise<any> }) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+
   const portfolio = await getPortfolioDetails(params.id);
   const categories = await getCategories(params.id);
   
-  // Await searchParams in Next.js 15 App Router? Actually Next 15 searchParams is a Promise. Let's await it to be safe.
-  const resolvedSearchParams = await searchParams;
-  const transactions = await getTransactions(params.id, resolvedSearchParams);
+  const transactions = await getTransactions(params.id, searchParams);
 
   if (!portfolio) {
     return <div>Portofolio tidak ditemukan.</div>;

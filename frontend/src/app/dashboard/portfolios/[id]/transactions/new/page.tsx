@@ -15,7 +15,8 @@ async function getCategories(portfolioId: string) {
   return data.data || [];
 }
 
-export default async function NewTransactionPage({ params }: { params: { id: string } }) {
+export default async function NewTransactionPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const categories = await getCategories(params.id);
   
   return <TransactionForm portfolioId={params.id} categories={categories} />;

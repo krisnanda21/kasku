@@ -22,15 +22,13 @@ func RegisterRoutes(router *gin.RouterGroup) {
 func getPortfolios(c *gin.Context) {
 	userID := c.GetString("user_id")
 
-	var memberLinks []database.PortfolioMember
-	if err := database.DB.Preload("Portfolio").Where("user_id = ?", userID).Find(&memberLinks).Error; err != nil {
+	var portfolios []database.Portfolio
+	if err := database.DB.Joins("JOIN portfolio_members ON portfolios.id = portfolio_members.portfolio_id").
+		Where("portfolio_members.user_id = ?", userID).
+		Where("portfolio_members.deleted_at IS NULL").
+		Find(&portfolios).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data portofolio"})
 		return
-	}
-
-	var portfolios []database.Portfolio
-	for _, link := range memberLinks {
-		portfolios = append(portfolios, link.Portfolio)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": portfolios})
