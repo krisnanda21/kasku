@@ -46,10 +46,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/login?error=NoToken', request.url));
     }
 
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
+    const callbackUrl = request.cookies.get('oauth_callback_url')?.value;
+    const finalRedirectUrl = callbackUrl || '/dashboard';
+    const response = NextResponse.redirect(new URL(finalRedirectUrl, request.url));
     
-    // Clear the state cookie
+    // Clear the state and callback cookies
     response.cookies.delete('google_oauth_state');
+    response.cookies.delete('oauth_callback_url');
 
     response.cookies.set({
       name: 'jwt',

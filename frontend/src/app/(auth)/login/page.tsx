@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { loginAction } from '@/app/actions/auth';
 import styles from '../auth.module.css';
 
@@ -9,8 +10,10 @@ const initialState = {
   error: '',
 };
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '';
 
   return (
     <div className={styles.container}>
@@ -19,6 +22,7 @@ export default function LoginPage() {
         <p className={styles.subtitle}>Kelola keuanganmu dengan lebih pintar</p>
 
         <form action={formAction}>
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
           {state?.error && <div className={styles.errorMsg}>{state.error}</div>}
 
           <div className={styles.formGroup}>
@@ -60,7 +64,7 @@ export default function LoginPage() {
           </div>
 
           <a
-            href="/api/auth/google/login"
+            href={`/api/auth/google/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
             className={`btn btn-outline ${styles.submitBtn}`}
             style={{
               display: 'flex',
@@ -76,9 +80,17 @@ export default function LoginPage() {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Belum punya akun? <Link href="/register" className={styles.link}>Daftar sekarang</Link>
+          Belum punya akun? <Link href={`/register${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.link}>Daftar sekarang</Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

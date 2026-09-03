@@ -1,7 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { registerAction } from '@/app/actions/auth';
 import styles from '../auth.module.css';
 
@@ -9,8 +10,10 @@ const initialState = {
   error: '',
 };
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerAction, initialState);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '';
 
   return (
     <div className={styles.container}>
@@ -19,6 +22,7 @@ export default function RegisterPage() {
         <p className={styles.subtitle}>Mulai kelola keuanganmu hari ini</p>
         
         <form action={formAction}>
+          <input type="hidden" name="callbackUrl" value={callbackUrl} />
           {state?.error && <div className={styles.errorMsg}>{state.error}</div>}
           
           <div className={styles.formGroup}>
@@ -72,7 +76,7 @@ export default function RegisterPage() {
           </div>
 
           <a 
-            href="/api/auth/google/login"
+            href={`/api/auth/google/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
             className={`btn btn-secondary ${styles.submitBtn}`}
             style={{ 
               display: 'flex', 
@@ -88,9 +92,17 @@ export default function RegisterPage() {
         </form>
         
         <p style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem' }}>
-          Sudah punya akun? <Link href="/login" className={styles.link}>Masuk di sini</Link>
+          Sudah punya akun? <Link href={`/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`} className={styles.link}>Masuk di sini</Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }

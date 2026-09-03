@@ -8,6 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func RegisterPublicRoutes(router *gin.RouterGroup) {
+	inviteGroup := router.Group("/invitations")
+	{
+		inviteGroup.GET("/preview", getInvitePreview) // ?token=xxx
+	}
+}
+
 func RegisterRoutes(router *gin.RouterGroup) {
 	group := router.Group("/portfolios")
 	{
@@ -16,6 +23,19 @@ func RegisterRoutes(router *gin.RouterGroup) {
 		group.GET("/:id", getPortfolioDetail)
 		group.PUT("/:id", updatePortfolio)
 		group.DELETE("/:id", deletePortfolio)
+
+		// Invitations & Members
+		group.GET("/:id/invitations", getInvitation)
+		group.PATCH("/:id/invitations/:token/toggle", toggleInvitation)
+		group.PATCH("/:id/invitations/:token/role", updateInvitationRole)
+		group.POST("/:id/invitations/regenerate", regenerateInvitation)
+		group.GET("/:id/members", getMembers)
+		group.DELETE("/:id/members/:user_id", removeMember)
+	}
+
+	inviteGroup := router.Group("/invitations")
+	{
+		inviteGroup.POST("/join", joinPortfolio)
 	}
 }
 

@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import PortfolioForm from './PortfolioForm';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { deletePortfolioAction } from '@/app/actions/portfolio';
+import ShareModal from './ShareModal';
 
-export default function PortfolioActions({ portfolio }: { portfolio: any }) {
+export default function PortfolioActions({ portfolio, role }: { portfolio: any, role: string }) {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -31,20 +33,31 @@ export default function PortfolioActions({ portfolio }: { portfolio: any }) {
   return (
     <>
       <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button 
-          onClick={() => setIsEditModalOpen(true)}
-          className="btn"
-          style={{ flex: 1, padding: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}
-        >
-          Edit
-        </button>
-        <button 
-          onClick={() => setIsDeleteModalOpen(true)}
-          className="btn"
-          style={{ flex: 1, padding: '0.5rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)' }}
-        >
-          Hapus
-        </button>
+        {role === 'owner' && (
+          <>
+            <button 
+              onClick={() => setIsEditModalOpen(true)}
+              className="btn"
+              style={{ flex: 1, padding: '0.5rem', backgroundColor: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}
+            >
+              Edit
+            </button>
+            <button 
+              onClick={() => setIsShareModalOpen(true)}
+              className="btn"
+              style={{ flex: 1, padding: '0.5rem', backgroundColor: 'rgba(59, 130, 246, 0.1)', border: '1px solid #3b82f6', color: '#3b82f6' }}
+            >
+              Bagikan
+            </button>
+            <button 
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="btn"
+              style={{ flex: 1, padding: '0.5rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)' }}
+            >
+              Hapus
+            </button>
+          </>
+        )}
       </div>
 
       {isEditModalOpen && (
@@ -81,6 +94,36 @@ export default function PortfolioActions({ portfolio }: { portfolio: any }) {
                   });
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isShareModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 50, padding: '1rem',
+        }}>
+          <div style={{
+            backgroundColor: 'var(--card-bg)',
+            borderRadius: '1rem', width: '100%', maxWidth: '600px',
+            maxHeight: '90vh', overflowY: 'auto', position: 'relative'
+          }}>
+            <button 
+              onClick={() => setIsShareModalOpen(false)}
+              style={{
+                position: 'absolute', top: '1.5rem', right: '1.5rem',
+                background: 'none', border: 'none', fontSize: '1.5rem',
+                cursor: 'pointer', color: 'var(--text-muted)'
+              }}
+            >
+              &times;
+            </button>
+            <div style={{ padding: '2rem' }}>
+              <ShareModal portfolioId={portfolio.id} onClose={() => setIsShareModalOpen(false)} />
             </div>
           </div>
         </div>

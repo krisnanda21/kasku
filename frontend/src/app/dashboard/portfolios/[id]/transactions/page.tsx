@@ -19,8 +19,7 @@ async function getPortfolioDetails(id: string) {
     return null;
   }
   const data = await res.json();
-  console.log('getPortfolioDetails data:', data);
-  return data.data;
+  return { portfolio: data.data, role: data.role };
 }
 
 async function getCategories(portfolioId: string) {
@@ -57,14 +56,17 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const portfolio = await getPortfolioDetails(params.id);
+  const portfolioData = await getPortfolioDetails(params.id);
+  
+  if (!portfolioData) {
+    return <div>Portofolio tidak ditemukan.</div>;
+  }
+  
+  const { portfolio, role } = portfolioData;
+
   const categories = await getCategories(params.id);
   
   const transactions = await getTransactions(params.id, searchParams);
-
-  if (!portfolio) {
-    return <div>Portofolio tidak ditemukan.</div>;
-  }
 
   return (
     <div>
@@ -79,11 +81,11 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
           </div>
         </div>
         <div style={{ width: '200px' }}>
-          <PortfolioActions portfolio={portfolio} />
+          <PortfolioActions portfolio={portfolio} role={role} />
         </div>
       </div>
 
-      <TransactionHeader portfolioId={portfolio.id} categories={categories} />
+      <TransactionHeader portfolioId={portfolio.id} categories={categories} role={role} />
 
       <TransactionFilters categories={categories} />
 
@@ -120,7 +122,7 @@ export default async function TransactionsPage(props: { params: Promise<{ id: st
                     {t.type === 'income' ? '+' : '-'} Rp {t.amount.toLocaleString('id-ID')}
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center' }}>
-                    <TransactionActions transaction={t} portfolioId={portfolio.id} categories={categories} />
+                    <TransactionActions transaction={t} portfolioId={portfolio.id} categories={categories} role={role} />
                   </td>
                 </tr>
               ))}

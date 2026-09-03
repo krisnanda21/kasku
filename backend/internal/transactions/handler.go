@@ -24,6 +24,12 @@ func RegisterRoutes(router *gin.RouterGroup) {
 
 func getTransactions(c *gin.Context) {
 	portfolioID := c.Param("id")
+	userID := c.GetString("user_id")
+
+	if !checkAccess(portfolioID, userID, false) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak"})
+		return
+	}
 
 	query := database.DB.Where("portfolio_id = ?", portfolioID)
 
@@ -60,6 +66,11 @@ type CreateTransactionInput struct {
 func createTransaction(c *gin.Context) {
 	portfolioID := c.Param("id")
 	userID := c.GetString("user_id")
+
+	if !checkAccess(portfolioID, userID, true) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak: Membutuhkan hak akses edit"})
+		return
+	}
 
 	var input CreateTransactionInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -125,6 +136,13 @@ func createTransaction(c *gin.Context) {
 
 func getTransactionDetail(c *gin.Context) {
 	id := c.Param("transaction_id")
+	portfolioID := c.Param("id")
+	userID := c.GetString("user_id")
+
+	if !checkAccess(portfolioID, userID, false) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak"})
+		return
+	}
 
 	var transaction database.Transaction
 	if err := database.DB.Preload("Category").First(&transaction, "id = ?", id).Error; err != nil {
@@ -147,6 +165,11 @@ func updateTransaction(c *gin.Context) {
 	id := c.Param("transaction_id")
 	portfolioID := c.Param("id")
 	userID := c.GetString("user_id")
+
+	if !checkAccess(portfolioID, userID, true) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak: Membutuhkan hak akses edit"})
+		return
+	}
 
 	var input UpdateTransactionInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -228,6 +251,11 @@ func deleteTransaction(c *gin.Context) {
 	portfolioID := c.Param("id")
 	userID := c.GetString("user_id")
 
+	if !checkAccess(portfolioID, userID, true) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak: Membutuhkan hak akses edit"})
+		return
+	}
+
 	tx := database.DB.Begin()
 
 	var transaction database.Transaction
@@ -283,6 +311,13 @@ func deleteTransaction(c *gin.Context) {
 
 func getTransactionLogs(c *gin.Context) {
 	id := c.Param("transaction_id")
+	portfolioID := c.Param("id")
+	userID := c.GetString("user_id")
+
+	if !checkAccess(portfolioID, userID, false) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akses ditolak"})
+		return
+	}
 
 	var logs []database.TransactionLog
 	if err := database.DB.Preload("User").Where("transaction_id = ?", id).Order("created_at desc").Find(&logs).Error; err != nil {
@@ -291,4 +326,15 @@ func getTransactionLogs(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": logs})
+}
+
+func checkAccess(portfolioID, userID string, requiresEdit bool) bool {
+	var member database.PortfolioMember
+	if err := database.DB.Where("portfolio_id = ? AND user_id = ?", portfolioID, userID).First(&member).Error; err != nil {
+		return false
+	}
+	if requiresEdit && member.Role != "owner" && member.Role != "edit" {
+		return false
+	}
+	return true
 }

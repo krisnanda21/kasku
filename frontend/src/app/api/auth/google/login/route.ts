@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   // Determine the base URL dynamically based on the request
   const url = new URL(request.url);
   const redirectUri = `${url.origin}/api/auth/callback`;
+  const callbackUrl = url.searchParams.get('callbackUrl');
 
   // Generate a random state for CSRF protection
   const state = Math.random().toString(36).substring(2, 15);
@@ -32,6 +33,17 @@ export async function GET(request: Request) {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 10 // 10 minutes
   });
+
+  if (callbackUrl) {
+    response.cookies.set({
+      name: 'oauth_callback_url',
+      value: callbackUrl,
+      httpOnly: true,
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 10 // 10 minutes
+    });
+  }
 
   return response;
 }

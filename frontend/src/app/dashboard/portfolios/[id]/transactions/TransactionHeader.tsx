@@ -4,7 +4,7 @@ import { useState, startTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import TransactionForm from './new/TransactionForm';
 
-export default function TransactionHeader({ portfolioId, categories }: { portfolioId: string, categories: any[] }) {
+export default function TransactionHeader({ portfolioId, categories, role }: { portfolioId: string, categories: any[], role: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
@@ -12,9 +12,11 @@ export default function TransactionHeader({ portfolioId, categories }: { portfol
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Riwayat Transaksi</h2>
-        <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
-          + Catat Transaksi
-        </button>
+        {role !== 'view' && (
+          <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
+            + Catat Transaksi
+          </button>
+        )}
       </div>
 
       {isModalOpen && (

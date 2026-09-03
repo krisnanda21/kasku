@@ -9,16 +9,22 @@ import { deleteTransactionAction } from '@/app/actions/transaction';
 export default function TransactionActions({ 
   transaction, 
   portfolioId, 
-  categories 
+  categories,
+  role
 }: { 
   transaction: any, 
   portfolioId: string, 
-  categories: any[] 
+  categories: any[],
+  role: string
 }) {
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  if (role === 'view') {
+    return <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontStyle: 'italic' }}>-</span>;
+  }
 
   const handleDelete = async () => {
     setIsDeleting(true);

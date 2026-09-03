@@ -39,6 +39,7 @@ func main() {
 	api := r.Group("/api/v1")
 	{
 		auth.RegisterRoutes(api)
+		portfolios.RegisterPublicRoutes(api)
 
 		// Protected routes
 		protected := api.Group("")

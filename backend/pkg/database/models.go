@@ -80,6 +80,19 @@ type TransactionLog struct {
 	CreatedAt     time.Time      `json:"created_at"`
 }
 
+type PortfolioInvitation struct {
+	ID          string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey" json:"id"`
+	PortfolioID string         `gorm:"type:uuid;not null;index" json:"portfolio_id"`
+	Portfolio   Portfolio      `gorm:"foreignKey:PortfolioID" json:"portfolio"`
+	Token       string         `gorm:"uniqueIndex;not null" json:"token"`
+	Role        string         `gorm:"not null;default:'view'" json:"role"`
+	IsActive    bool           `gorm:"default:true" json:"is_active"`
+	CreatedBy   string         `gorm:"type:uuid;not null" json:"created_by"`
+	Creator     User           `gorm:"foreignKey:CreatedBy" json:"creator"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+}
+
 func Migrate() {
 	DB.AutoMigrate(
 		&User{},
@@ -88,5 +101,6 @@ func Migrate() {
 		&Category{},
 		&Transaction{},
 		&TransactionLog{},
+		&PortfolioInvitation{},
 	)
 }

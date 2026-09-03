@@ -6,12 +6,13 @@ import { redirect } from 'next/navigation';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
 export async function loginAction(prevState: any, formData: FormData) {
-  const email = formData.get('email');
-  const password = formData.get('password');
+	const email = formData.get('email');
+	const password = formData.get('password');
+	const callbackUrl = formData.get('callbackUrl') as string;
 
-  if (!email || !password) {
-    return { error: 'Email dan password wajib diisi' };
-  }
+	if (!email || !password) {
+		return { error: 'Email dan password wajib diisi' };
+	}
 
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -39,13 +40,18 @@ export async function loginAction(prevState: any, formData: FormData) {
     return { error: 'Koneksi ke server gagal' };
   }
 
-  redirect('/dashboard');
+	if (callbackUrl) {
+		redirect(callbackUrl);
+	} else {
+		redirect('/dashboard');
+	}
 }
 
 export async function registerAction(prevState: any, formData: FormData) {
   const name = formData.get('name');
   const email = formData.get('email');
   const password = formData.get('password');
+  const callbackUrl = formData.get('callbackUrl') as string;
 
   if (!name || !email || !password) {
     return { error: 'Semua field wajib diisi' };
@@ -67,7 +73,11 @@ export async function registerAction(prevState: any, formData: FormData) {
     return { error: 'Koneksi ke server gagal' };
   }
 
-  redirect('/login');
+  if (callbackUrl) {
+    redirect(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  } else {
+    redirect('/login');
+  }
 }
 
 export async function logoutAction() {
