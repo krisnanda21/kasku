@@ -30,8 +30,28 @@ func checkAccessAndGetTransactions(c *gin.Context) ([]database.Transaction, erro
 		return nil, fmt.Errorf("akses ditolak")
 	}
 
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
+	categoryID := c.Query("category_id")
+	txType := c.Query("type")
+
+	query := database.DB.Preload("Category").Where("portfolio_id = ?", id)
+
+	if startDate != "" {
+		query = query.Where("date >= ?", startDate)
+	}
+	if endDate != "" {
+		query = query.Where("date <= ?", endDate)
+	}
+	if categoryID != "" && categoryID != "all" {
+		query = query.Where("category_id = ?", categoryID)
+	}
+	if txType != "" && txType != "all" {
+		query = query.Where("type = ?", txType)
+	}
+
 	var transactions []database.Transaction
-	if err := database.DB.Preload("Category").Where("portfolio_id = ?", id).Order("date desc").Find(&transactions).Error; err != nil {
+	if err := query.Order("date desc").Find(&transactions).Error; err != nil {
 		return nil, fmt.Errorf("gagal mengambil transaksi")
 	}
 
