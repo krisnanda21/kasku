@@ -18,7 +18,7 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>(
     portfolios.length > 0 ? portfolios[0].id : ''
   );
-  
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -26,7 +26,7 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
   const [trendData, setTrendData] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [topTransactions, setTopTransactions] = useState<any[]>([]);
-  
+
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   const [isLoadingTrend, setIsLoadingTrend] = useState(false);
   const [isLoadingCategory, setIsLoadingCategory] = useState(false);
@@ -36,7 +36,7 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
 
   useEffect(() => {
     if (!selectedPortfolio) return;
-    
+
     // Only fetch if dates are set (or if we explicitly want to fetch without dates)
     // Actually the period filter will set dates immediately on mount.
     if (!startDate || !endDate) return;
@@ -109,7 +109,7 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem' }}>
-          
+
           <div style={{ minWidth: '250px' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Pilih Portofolio</label>
             <CustomSelect
@@ -133,28 +133,28 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
 
       {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <StatCard 
+        <StatCard
           title="Total Saldo Portofolio"
           value={`Rp ${(summary?.balance || 0).toLocaleString('id-ID')}`}
           icon={<Landmark size={24} />}
           isLoading={isLoadingSummary}
-          // Neutral trend for balance
+        // Neutral trend for balance
         />
-        <StatCard 
+        <StatCard
           title="Total Pemasukan"
           value={`Rp ${(summary?.income || 0).toLocaleString('id-ID')}`}
           icon={<TrendingUp size={24} color="var(--success)" />}
           isLoading={isLoadingSummary}
           trend={summary?.trend?.income !== undefined ? { percentage: summary.trend.income, type: 'positive' } : undefined}
         />
-        <StatCard 
+        <StatCard
           title="Total Pengeluaran"
           value={`Rp ${(summary?.expense || 0).toLocaleString('id-ID')}`}
           icon={<TrendingDown size={24} color="var(--danger)" />}
           isLoading={isLoadingSummary}
           trend={summary?.trend?.expense !== undefined ? { percentage: summary.trend.expense, type: 'negative' } : undefined}
         />
-        <StatCard 
+        <StatCard
           title={summary?.net >= 0 ? "Surplus" : "Defisit"}
           value={`${summary?.net < 0 ? '-' : ''}Rp ${Math.abs(summary?.net || 0).toLocaleString('id-ID')}`}
           subtitle={summary?.net >= 0 ? "Pemasukan lebih besar" : "Pengeluaran lebih besar"}
@@ -166,14 +166,14 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
 
       {/* Insight Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <StatCard 
+        <StatCard
           title="Jumlah Transaksi"
           value={summary?.total_transactions || 0}
           subtitle="Total transaksi pada periode ini"
           icon={<Hash size={24} />}
           isLoading={isLoadingSummary}
         />
-        <StatCard 
+        <StatCard
           title="Pengeluaran Terbesar"
           value={summary?.top_expense_category || '-'}
           subtitle={summary?.top_expense_category ? `Rp ${(summary?.top_expense_amount || 0).toLocaleString('id-ID')}` : 'Belum ada pengeluaran'}
@@ -188,17 +188,17 @@ export default function DashboardClient({ portfolios, token }: DashboardClientPr
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        <CategoryDonutChart 
-          title="Kategori Pengeluaran" 
-          data={expenseCategories} 
-          type="expense" 
-          isLoading={isLoadingCategory} 
+        <CategoryDonutChart
+          title="Kategori Pengeluaran"
+          data={expenseCategories}
+          type="expense"
+          isLoading={isLoadingCategory}
         />
-        <CategoryDonutChart 
-          title="Kategori Pemasukan" 
-          data={incomeCategories} 
-          type="income" 
-          isLoading={isLoadingCategory} 
+        <CategoryDonutChart
+          title="Kategori Pemasukan"
+          data={incomeCategories}
+          type="income"
+          isLoading={isLoadingCategory}
         />
       </div>
 
