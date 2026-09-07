@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { logoutAction } from '@/app/actions/auth';
 import styles from './layout.module.css';
 
@@ -15,25 +16,27 @@ export default function DashboardLayout({
   return (
     <div className={styles.dashboardContainer}>
       <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <Link href="/" className={styles.logo}>KasKu.</Link>
+        <div className={styles.sidebarHeader} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Link href="/" className={styles.logo} style={{ display: 'flex', alignItems: 'center' }}>
+            <Image src="/2_logo_sidebar.svg" alt="KasKu Logo" width={200} height={80} priority />
+          </Link>
         </div>
 
         <nav className={styles.nav}>
-          <Link 
-            href="/dashboard" 
+          <Link
+            href="/dashboard"
             className={`${styles.navItem} ${pathname === '/dashboard' ? styles.navItemActive : ''}`}
           >
             📊 Overview
           </Link>
-          <Link 
-            href="/dashboard/portfolios" 
+          <Link
+            href="/dashboard/portfolios"
             className={`${styles.navItem} ${pathname.startsWith('/dashboard/portfolios') ? styles.navItemActive : ''}`}
           >
             💼 Portofolio
           </Link>
-          <Link 
-            href="/dashboard/reports" 
+          <Link
+            href="/dashboard/reports"
             className={`${styles.navItem} ${pathname.startsWith('/dashboard/reports') ? styles.navItemActive : ''}`}
           >
             📑 Laporan

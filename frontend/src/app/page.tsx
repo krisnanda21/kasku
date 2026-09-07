@@ -1,16 +1,19 @@
 import styles from "./page.module.css";
+import Image from 'next/image';
 import Link from "next/link";
 
 export default function Home() {
   return (
     <main className={styles.hero}>
       <div className="animate-fade-in">
-        <h1 className={styles.title}>KasKu</h1>
+        <h1 className={styles.title} style={{ display: 'flex', justifyContent: 'center' }}>
+          <Image src="/4_logo_homepage.svg" alt="KasKu Logo" width={300} height={200} priority />
+        </h1>
         <p className={styles.subtitle}>
           Aplikasi manajemen kas komunitas yang transparan, mudah, dan kolaboratif.
           Lacak setiap pemasukan dan pengeluaran secara real-time.
         </p>
-        
+
         <div className={styles.ctaGroup}>
           <Link href="/register" className="btn btn-primary">
             Mulai Sekarang

@@ -80,13 +80,13 @@
 }
 
 .header {
-  height: 72px;
+  height: 82px;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 2rem 1rem;
 }
 
 .content {

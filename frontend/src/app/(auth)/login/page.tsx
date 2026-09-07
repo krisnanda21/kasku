@@ -6,6 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { loginAction } from '@/app/actions/auth';
 import styles from '../auth.module.css';
 
+import Image from 'next/image';
+
 const initialState = {
   error: '',
 };
@@ -18,6 +20,23 @@ function LoginForm() {
   return (
     <div className={styles.container}>
       <div className={styles.authCard}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', }}>
+          <Image
+            src="/1_logo_login.svg"
+            alt="KasKu Logo"
+            width={120}
+            height={120}
+            priority
+            style={{
+              borderRadius: '28px',
+              filter: `
+                drop-shadow(0 12px 20px rgba(0, 0, 0, 0.18))
+                drop-shadow(0 4px 6px rgba(0, 0, 0, 0.08))
+              `,
+              transform: 'translateY(-2px)',
+            }}
+          />
+        </div>
         <h1 className={styles.title}>Masuk ke KasKu</h1>
         <p className={styles.subtitle}>Kelola keuanganmu dengan lebih pintar</p>
 
