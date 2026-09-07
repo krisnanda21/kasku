@@ -148,3 +148,15 @@ func Middleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func GetMe(c *gin.Context) {
+	userID := c.GetString("user_id")
+	
+	var user database.User
+	if err := database.DB.Select("id, name, email, created_at, updated_at").Where("id = ?", userID).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User tidak ditemukan"})
+		return
+	}
+	
+	c.JSON(http.StatusOK, gin.H{"data": user})
+}

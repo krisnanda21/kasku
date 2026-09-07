@@ -85,3 +85,21 @@ export async function logoutAction() {
   cookieStore.delete('jwt');
   redirect('/login');
 }
+
+export async function getUserMe() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('jwt')?.value;
+  if (!token) return null;
+
+  try {
+    const res = await fetch(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store'
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+}

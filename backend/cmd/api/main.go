@@ -49,10 +49,10 @@ func main() {
 		auth.RegisterRoutes(api)
 		portfolios.RegisterPublicRoutes(api)
 
-		// Protected routes
 		protected := api.Group("")
 		protected.Use(auth.Middleware())
 		{
+			protected.GET("/auth/me", auth.GetMe)
 			portfolios.RegisterRoutes(protected)
 			portfolios.RegisterExportRoutes(protected)
 			categories.RegisterRoutes(protected)
