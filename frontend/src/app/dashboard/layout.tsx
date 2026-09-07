@@ -76,7 +76,7 @@ export default function DashboardLayout({
       </aside>
 
       <main className={styles.mainContent}>
-        <div style={{ position: 'absolute', top: '1.5rem', right: '2rem', zIndex: 10 }} ref={dropdownRef}>
+        <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', zIndex: 10 }} ref={dropdownRef}>
           <div 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', backgroundColor: 'var(--card-bg)', padding: '0.5rem 1rem', borderRadius: '2rem', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)', cursor: 'pointer', transition: 'all 0.2s' }}
@@ -116,6 +116,7 @@ export default function DashboardLayout({
             </div>
           )}
         </div>
+
         <div className={styles.content}>
           {children}
         </div>

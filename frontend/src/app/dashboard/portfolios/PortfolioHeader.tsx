@@ -10,7 +10,7 @@ export default function PortfolioHeader() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', paddingRight: '14rem' }}>
         <div>
           <h1 style={{ fontSize: '1.875rem', fontWeight: 700 }}>Manajemen Portofolio</h1>
           <p style={{ color: 'var(--text-muted)' }}>Kelola kas, tabungan, dan dompet Anda</p>

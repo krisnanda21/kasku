@@ -10,7 +10,7 @@ export default function TransactionHeader({ portfolioId, categories, role }: { p
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', paddingRight: '14rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Riwayat Transaksi</h2>
         {role !== 'view' && (
           <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
