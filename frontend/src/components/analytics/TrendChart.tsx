@@ -78,8 +78,8 @@ export default function TrendChart({ data, isLoading }: TrendChartProps) {
             />
             <YAxis stroke="var(--text-muted)" fontSize={12} tickFormatter={(value) => `Rp ${value / 1000}k`} />
             <Tooltip 
-              formatter={(value: number) => `Rp ${value.toLocaleString('id-ID')}`}
-              labelFormatter={(label) => new Date(label).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              formatter={((value: number) => `Rp ${value.toLocaleString('id-ID')}`) as any}
+              labelFormatter={((label: string) => new Date(label).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })) as any}
               contentStyle={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderRadius: '0.5rem' }}
             />
             <Legend wrapperStyle={{ paddingTop: '20px' }} />

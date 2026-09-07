@@ -56,8 +56,9 @@ export default function CategoryDonutChart({ title, data, isLoading, type }: Cat
               paddingAngle={5}
               dataKey="total"
               nameKey="category"
-              label={({ cx, cy, midAngle, innerRadius, outerRadius, value, index }) => {
-                const totalAmount = data.reduce((sum, item) => sum + item.total, 0);
+              label={((props: any) => {
+                const { cx, cy, midAngle, innerRadius, outerRadius, value, index } = props;
+                const totalAmount = data.reduce((sum: any, item: any) => sum + item.total, 0);
                 const percent = (value / totalAmount) * 100;
                 
                 // Only show label if percentage is > 5% to avoid cluttering
@@ -85,18 +86,18 @@ export default function CategoryDonutChart({ title, data, isLoading, type }: Cat
                     {`${data[index].category} (${percent.toFixed(0)}%)`}
                   </text>
                 );
-              }}
+              }) as any}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value: number, name: string) => {
-                const totalAmount = data.reduce((sum, item) => sum + item.total, 0);
+              formatter={((value: number, name: string) => {
+                const totalAmount = data.reduce((sum: any, item: any) => sum + item.total, 0);
                 const percentage = totalAmount > 0 ? ((value / totalAmount) * 100).toFixed(1) : 0;
                 return [`Rp ${value.toLocaleString('id-ID')} (${percentage}%)`, name];
-              }}
+              }) as any}
               contentStyle={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderRadius: '0.5rem' }}
             />
           </PieChart>
