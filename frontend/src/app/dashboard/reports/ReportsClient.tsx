@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Loader2, Download, X } from 'lucide-react';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import CustomSelect from '@/components/ui/CustomSelect';
@@ -31,6 +31,9 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [isDownloadingExcel, setIsDownloadingExcel] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  
+  // Gunakan ref untuk mencegah race condition dari klik beruntun secara sinkron
+  const isDownloadingRef = useRef(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
@@ -79,7 +82,9 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
 
   const handleDownload = async (format: 'pdf' | 'excel') => {
     if (!selectedPortfolio) return;
+    if (isDownloadingRef.current || isDownloadingPDF || isDownloadingExcel) return;
     
+    isDownloadingRef.current = true;
     setErrorMsg('');
     if (format === 'pdf') setIsDownloadingPDF(true);
     if (format === 'excel') setIsDownloadingExcel(true);
@@ -89,40 +94,29 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
         start_date: startDate,
         end_date: endDate,
         type: txType,
-        category_id: categoryId
+        category_id: categoryId,
+        token: token
       }).toString();
 
-      const response = await fetch(`${API_URL}/portfolios/${selectedPortfolio.id}/export/${format}?${queryParams}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Gagal mengunduh laporan (${response.status})`);
-      }
-
-      const blob = await response.blob();
-      if (blob.size === 0) {
-        throw new Error('Data laporan kosong');
-      }
-
-      const url = window.URL.createObjectURL(blob);
+      const url = `${API_URL}/portfolios/${selectedPortfolio.id}/export/${format}?${queryParams}`;
+      
+      // Menggunakan native anchor click (tidak menggunakan fetch) 
+      // untuk menghindari interupsi browser/ekstensi (IDM) terhadap object stream
       const a = document.createElement('a');
       a.href = url;
-      
-      const ext = format === 'pdf' ? 'pdf' : 'xlsx';
-      const sanitizedName = selectedPortfolio.name.replace(/[^a-z0-9]/gi, '_');
-      a.download = `KasKu_${sanitizedName}_${startDate}_${endDate}.${ext}`;
-      
+      a.target = "_blank";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       
-      window.URL.revokeObjectURL(url);
+      // Tutup modal jika berhasil agar UX lebih baik
+      setIsModalOpen(false);
     } catch (err: any) {
+      console.error("Download error:", err);
+      // Hanya set pesan error jika modal masih terbuka (bukan error palsu pasca-download)
       setErrorMsg(err.message || 'Terjadi kesalahan saat mengunduh laporan');
     } finally {
+      isDownloadingRef.current = false;
       setIsDownloadingPDF(false);
       setIsDownloadingExcel(false);
     }
@@ -152,7 +146,7 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
               </div>
 
               <div style={{ marginTop: 'auto' }}>
-                <button 
+                <button type="button"
                   onClick={() => openDownloadModal(p)}
                   className="btn btn-primary" 
                   style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
@@ -188,7 +182,7 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
             position: 'relative',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
           }}>
-            <button 
+            <button type="button"
               onClick={() => setIsModalOpen(false)}
               style={{
                 position: 'absolute',
@@ -252,7 +246,7 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
+              <button type="button"
                 onClick={() => handleDownload('pdf')}
                 disabled={isDownloadingPDF || isDownloadingExcel || !startDate || !endDate}
                 className="btn btn-primary"
@@ -260,7 +254,7 @@ export default function ReportsClient({ portfolios, token }: ReportsClientProps)
               >
                 {isDownloadingPDF ? <Loader2 size={18} className="spin" /> : '📄 Unduh PDF'}
               </button>
-              <button 
+              <button type="button"
                 onClick={() => handleDownload('excel')}
                 disabled={isDownloadingPDF || isDownloadingExcel || !startDate || !endDate}
                 className="btn btn-secondary"

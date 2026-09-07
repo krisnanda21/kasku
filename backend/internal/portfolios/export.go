@@ -111,6 +111,9 @@ func exportPDF(c *gin.Context) {
 	pdf := gofpdf.New("L", "mm", "A4", "") // L for landscape
 	pdf.AddPage()
 	
+	// Tambahkan logo di kanan atas (X: 240, Y: 10, Width: 40)
+	pdf.ImageOptions("E:\\Anti Gravity\\KasKu\\logo\\2_logo_sidebar.png", 240, 10, 40, 0, false, gofpdf.ImageOptions{ImageType: "PNG", ReadDpi: true}, 0, "")
+
 	// Header Info
 	pdf.SetFont("Arial", "B", 16)
 	pdf.Cell(40, 10, "Laporan Mutasi KasKu")

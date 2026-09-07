@@ -122,21 +122,29 @@ func login(c *gin.Context) {
 
 func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		tokenString := ""
+
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+		if authHeader != "" {
+			parts := strings.Split(authHeader, " ")
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				tokenString = parts[1]
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Format token tidak valid"})
+				c.Abort()
+				return
+			}
+		} else {
+			tokenString = c.Query("token")
+		}
+
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header or token query required"})
 			c.Abort()
 			return
 		}
 
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Format token tidak valid"})
-			c.Abort()
-			return
-		}
-
-		claims, err := jwt.ValidateToken(parts[1])
+		claims, err := jwt.ValidateToken(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token tidak valid atau expired"})
 			c.Abort()
