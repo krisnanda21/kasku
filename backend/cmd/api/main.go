@@ -53,6 +53,8 @@ func main() {
 		protected.Use(auth.Middleware())
 		{
 			protected.GET("/auth/me", auth.GetMe)
+			protected.PUT("/auth/profile", auth.UpdateProfile)
+			protected.PUT("/auth/password", auth.UpdatePassword)
 			portfolios.RegisterRoutes(protected)
 			portfolios.RegisterExportRoutes(protected)
 			categories.RegisterRoutes(protected)

@@ -85,3 +85,11 @@
   flex-grow: 1;
   overflow-y: auto;
 }
+
+.dropdownItem {
+  transition: background-color 0.2s;
+}
+
+.dropdownItem:hover {
+  background-color: var(--hover-bg, #f3f4f6);
+}

@@ -153,10 +153,84 @@ func GetMe(c *gin.Context) {
 	userID := c.GetString("user_id")
 	
 	var user database.User
-	if err := database.DB.Select("id, name, email, created_at, updated_at").Where("id = ?", userID).First(&user).Error; err != nil {
+	if err := database.DB.Select("id, name, email, avatar, google_id, created_at, updated_at").Where("id = ?", userID).First(&user).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User tidak ditemukan"})
 		return
 	}
 	
 	c.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+type UpdateProfileInput struct {
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+}
+
+func UpdateProfile(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	var input UpdateProfileInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updates := map[string]interface{}{}
+	if input.Name != "" {
+		updates["name"] = input.Name
+	}
+	if input.Avatar != "" {
+		updates["avatar"] = input.Avatar
+	}
+
+	if err := database.DB.Model(&database.User{}).Where("id = ?", userID).Updates(updates).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengupdate profil"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Profil berhasil diupdate"})
+}
+
+type UpdatePasswordInput struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required,min=6"`
+}
+
+func UpdatePassword(c *gin.Context) {
+	userID := c.GetString("user_id")
+
+	var input UpdatePasswordInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user database.User
+	if err := database.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User tidak ditemukan"})
+		return
+	}
+
+	if user.GoogleID != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User login via Google tidak dapat merubah password"})
+		return
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.OldPassword)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Password lama salah"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengenkripsi password"})
+		return
+	}
+
+	if err := database.DB.Model(&user).Update("password", string(hashedPassword)).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengupdate password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password berhasil diupdate"})
 }

@@ -103,3 +103,53 @@ export async function getUserMe() {
     return null;
   }
 }
+
+export async function updateProfile(data: { name: string, avatar: string }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('jwt')?.value;
+  if (!token) return { error: 'Unauthorized' };
+
+  try {
+    const res = await fetch(`${API_URL}/auth/profile`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!res.ok) {
+      const err = await res.json();
+      return { error: err.error || 'Gagal update profil' };
+    }
+    return { success: true };
+  } catch (error) {
+    return { error: 'Koneksi gagal' };
+  }
+}
+
+export async function updatePassword(data: { old_password: string, new_password: string }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('jwt')?.value;
+  if (!token) return { error: 'Unauthorized' };
+
+  try {
+    const res = await fetch(`${API_URL}/auth/password`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!res.ok) {
+      const err = await res.json();
+      return { error: err.error || 'Gagal update password' };
+    }
+    return { success: true };
+  } catch (error) {
+    return { error: 'Koneksi gagal' };
+  }
+}

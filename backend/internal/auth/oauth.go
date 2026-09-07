@@ -59,6 +59,8 @@ func GoogleExchange(c *gin.Context) {
 	var googleUser struct {
 		Email         string `json:"email"`
 		Name          string `json:"name"`
+		Picture       string `json:"picture"`
+		Id            string `json:"id"`
 		VerifiedEmail bool   `json:"verified_email"`
 	}
 
@@ -82,6 +84,8 @@ func GoogleExchange(c *gin.Context) {
 			Name:     googleUser.Name,
 			Email:    googleUser.Email,
 			Password: "OAUTH_USER_NO_PASSWORD", // Non-empty so GORM doesn't omit it, preventing NOT NULL error
+			Avatar:   googleUser.Picture,
+			GoogleID: &googleUser.Id,
 		}
 		
 		if err := database.DB.Create(&user).Error; err != nil {
